@@ -11,4 +11,4 @@ public:
   virtual void Update();
   void Render();
   void Shutdown();
-};
+}

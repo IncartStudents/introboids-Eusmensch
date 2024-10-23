@@ -10,6 +10,30 @@ using namespace std;
 int W = 0;
 int H = 0;
 
+class Boids
+{
+
+	float x, y;							// Coordinates
+	float velocity_x, velocity_y;		// Velocity
+	float direction;					// Direction of boid
+	float radius;						// Radius of vision
+	float angle;						// Angle of vision
+
+	// void change(boid)
+	// {
+	// 	for i in boids_massive:
+	//		switch:
+	//			if boid.x > 29.9 || boid.x < 0.1:
+	//				velocity_x = -velocity_x;
+	//			if boid.y > 29.9 || boid.y < 0.1:
+	//				velocity_y = -velocity_y;
+	//
+	// 		if (((boid.x - i.x) ** 2 + (boid.y - i.y) ** 2) ** 0.5) <= boid.radius:
+	// 			velocity_x...
+	// }
+
+}
+
 class CustomImGui : public UseImGui {
 public:
 	virtual void Update() override {

@@ -1,13 +1,7 @@
 {
-	"name": "boids-imgui",
-	"version": "1.0",
-	"dependencies": [
-		{
-			"name": "imgui",
-			"features": [ "glfw-binding", "opengl3-binding" ]
-		},
-		"glfw3",
-		"glad",
-		"fmt"
-	]
+  "dependencies": [
+    "glad",
+    "glfw3",
+    "imgui"
+  ]
 }
