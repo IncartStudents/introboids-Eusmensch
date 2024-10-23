@@ -1,9 +1,14 @@
-﻿# CMakeList.txt : Top-level CMake project file, do global configuration
-# and include sub-projects here.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.8)
 
-project ("boids-imgui")
+project(cpp)
 
-# Include sub-projects.
-add_subdirectory ("cpp")
+add_executable (boids-imgui "main.cpp" "UseImGui.cpp" "UseImGui.h")
+
+find_package(imgui CONFIG REQUIRED)
+target_link_libraries(boids-imgui PRIVATE imgui::imgui)
+
+find_package(glad CONFIG REQUIRED)
+target_link_libraries(boids-imgui PRIVATE glad::glad)
+
+find_package(glfw3 CONFIG REQUIRED)
+target_link_libraries(boids-imgui PRIVATE glfw)

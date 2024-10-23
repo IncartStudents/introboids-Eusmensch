@@ -1,0 +1,20 @@
+{
+    "version": 2,
+    "configurePresets": [
+        {
+            "name": "default",
+            "inherits": "vcpkg",
+            "environment": {
+                "VCPKG_ROOT": "C:/Users/eusmensch/vcpkg"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "default",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "default"
+        }
+    ]
+}
