@@ -23,7 +23,7 @@ function distance(boid1::Tuple{Float64, Float64}, boid2::Tuple{Float64, Float64}
     return sqrt((boid2[1] - boid1[1])^2 + (boid2[2] - boid1[2])^2)
 end
 
-function average_position(boids::Vector{Tuple{Float64, Float64}})
+function average(boids::Vector{Tuple{Float64, Float64}})
     sum_x = 0.0
     sum_y = 0.0
     n = length(boids)
@@ -32,9 +32,8 @@ function average_position(boids::Vector{Tuple{Float64, Float64}})
         sum_x += boid[1]  
         sum_y += boid[2]  
     end
-    avg_pos = (sum_x / n, sum_y / n)
-    
-    return avg_pos 
+    avg = (sum_x / n, sum_y / n)
+    return avg
 end
 
 function coherence(state::WorldState)
@@ -49,7 +48,7 @@ function coherence(state::WorldState)
         if isempty(mates)
             v_coherence[i] = (0.0, 0.0)
         else
-            v_coherence[i] = state.coherence .* (average_position(mates) .- state.boids[i])
+            v_coherence[i] = state.coherence .* (average(mates) .- state.boids[i])
         end
     end
     return v_coherence
@@ -81,7 +80,7 @@ function alignment(state::WorldState)
         if isempty(mates)
             v_alignment[i] = (0.0, 0.0)
         else
-            v_alignment[i] = state.alignment .* (average_position(mates) .- state.velocities[i])
+            v_alignment[i] = state.alignment .* (average(mates) .- state.velocities[i])
         end
     end
     return v_alignment
@@ -94,30 +93,35 @@ function separation_walls(state::WorldState)
         near_zero_y = state.boids[i][2] < state.radius[1]
         near_w = state.boids[i][1] > (state.width[1] - state.radius[1])
         near_h = state.boids[i][2] > (state.height[1] - state.radius[1])
-        v_separation_walls[i] = 2 .* ((near_zero_x || near_w) / (state.boids[i][1] .- (near_w * state.width[1])), 
+        v_separation_walls[i] = 1 .* ((near_zero_x || near_w) / (state.boids[i][1] .- (near_w * state.width[1])), 
         (near_zero_y || near_h) / (state.boids[i][2] .- (near_h * state.height[1])))
     end
     return v_separation_walls
 end
 
 function update!(state::WorldState)
+    v_coherence = coherence(state)
+    v_alignment = alignment(state)
+    v_separation = separation(state)
+    v_separation_walls = separation_walls(state)
     for i in 1:length(state.boids)
-        state.velocities[i] = state.velocities[i] .+ coherence(state)[i] .+ separation(state)[i] .+ alignment(state)[i] .+ separation_walls(state)[i]
+        state.velocities[i] = state.velocities[i] .+ v_coherence[i] .+ v_alignment[i] .+ v_separation[i] .+ v_separation_walls[i]
         if sqrt(state.velocities[i][1]^2 + state.velocities[i][2]^2) > state.v_max[1]
             state.velocities[i] = state.velocities[i] .* (state.v_max[1] / sqrt(state.velocities[i][1]^2 + state.velocities[i][2]^2))
         end
         state.boids[i] = state.boids[i] .+ state.velocities[i]
     end
+    
     # TODO: реализация алгоритма
     return nothing
 end
 
 function (@main)(ARGS)
     h, w = 50, 50
-    n_boids = 20
-    v_min::Float64, v_max::Float64 = 0, 2.0 # Максимальная скорость должна быть меньше радиуса, чтобы боиды не могли преодолеть границы карты
+    n_boids = 60
+    v_min::Float64, v_max::Float64 = 0, 1 # Максимальная скорость должна быть меньше радиуса, чтобы боиды не могли преодолеть границы карты
     radius::Float64 = 5
-    ch::Float64, sp::Float64, al::Float64 = 0.5, 0.5, 0.1
+    ch::Float64, sp::Float64, al::Float64 = 0.07, 0.005, 0.005
 
     state = WorldState(n_boids, h, w, v_min, v_max, radius, ch, sp, al)
 
@@ -126,7 +130,7 @@ function (@main)(ARGS)
         boids = state.boids
         scatter(boids, xlim = (0, state.width), ylim = (0, state.height))
     end
-    gif(anim, "boids.gif", fps = 10)
+    gif(anim, "boids.gif", fps = 24)
 end
 
 end
